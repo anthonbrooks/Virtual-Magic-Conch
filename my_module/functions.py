@@ -2,6 +2,7 @@ import string
 import random
 import nltk
 
+# Functions
 
 def is_question(input_string):
     """
