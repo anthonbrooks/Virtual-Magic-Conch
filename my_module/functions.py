@@ -338,8 +338,9 @@ def find_in_list(list_one, list_two):
 
 GREETINGS_IN = ['hello', 'hi', 'hey', 'hola', 'welcome', 'bonjour', 'greetings', 'hola']
 GREETING_OUT = ["Hello, I am a virtual magic conch, "
-                 "I can answer any question that you may have in life.                                 "
-                 "To get started, begin your question with 'magic conch ...'. To end the chat, input: 'quit'."]
+                 "I can answer any question that you may have in life.\n"
+                 "To get started, begin your question with 'magic conch ...'.\n"
+                "To end the chat, input: 'quit'."]
 
 COMP_IN = ['python']
 COMP_OUT = ["Python is what I'm made of."]
