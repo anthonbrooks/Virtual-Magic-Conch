@@ -231,7 +231,7 @@ def list_to_string(input_list, separator):
 def end_chat(input_list):
     """
     
-    End the conversation if the word 'quit' appears
+    End the conversation if the words 'quit', 'exit', or 'bye' appears
     
     Parameters
     ----------
@@ -247,7 +247,7 @@ def end_chat(input_list):
     
     output = ''
     
-    if 'quit' in input_list:
+    if 'quit' or 'exit' or 'bye' in input_list:
         output = True
         
     else:
@@ -363,82 +363,77 @@ QUESTION = ["Yes!", "No!",
             "Repeat the question, please."]
 
 
-def magic_conch():
+def magic_conch(user_input: str) -> str:
     """Main function to run the magic conch chatbot."""
     
-    chat = True
+    # Get a message from the user
+    msg = user_input
     
-    while chat:
+    out_msg = None
 
-        # Get a message from the user
-        msg = input('INPUT :\t')
-        out_msg = None
+    # Check if the input is a question
+    question = is_question(msg)
 
-        # Check if the input is a question
-        question = is_question(msg)
+    # Prepare the input message
+    msg = prepare_text(msg)
+    
+    # Check if the answer to the buffalo joke is correct, if so, return end msg
+    if is_buffalo_joke(msg):
+        out_msg = 'Bye!'
 
-        # Prepare the input message
-        msg = prepare_text(msg)
+    # Check for a selection of topics that we have defined to respond to
+    #   Here, we will check for a series of topics that we have designed to answer to
+    if not out_msg:
 
-        # Check for an end msg 
-        if end_chat(msg):
-            out_msg = 'Bye!'
-            chat = False
+        # Initialize to collect a list of possible outputs
+        outs = []
+
+        # Check if the input looks like a greeting, add a greeting output if so
+        outs.append(selector(msg, GREETINGS_IN, GREETING_OUT))
+
+        # Check if the input looks like a computer thing, add a computer output if so
+        outs.append(selector(msg, COMP_IN, COMP_OUT))
+
+        # Check if the input looks like a joke, add a joke output if so
+        if is_in_list(msg, JOKES_IN):
+            outs.append(list_to_string(random.choice(JOKES_OUT), ''))
+
+        # IF YOU WANTED TO ADD MORE TOPICS TO RESPOND TO, YOU COULD ADD THEM IN HERE
+
+        # We could have selected multiple outputs from the topic search above (if multiple return possible outputs)
+        #   We also might have appended None in some cases, meaning we don't have a reply
+        #   To deal with this, we are going to randomly select an output from the set of outputs that are not None
+        options = list(filter(None, outs))
+        if options:
+            out_msg = random.choice(options)
+
+    # If we don't have an output yet, but the input was a question, return msg related to it being a question
+    if not out_msg and question:
+        out_msg = random.choice(QUESTION)
         
-        # Check if the answer to the buffalo joke is correct, if so, return end msg
-        if is_buffalo_joke(msg):
-            out_msg = 'Bye!'
-            chat = False
+        # check if the question looks philosphical, return the out_msg if so
+        if is_in_list(msg, LIFE):
+            out_msg = "Sorry, I can't help you with that."
+        
+        # check if the question contains 'or', return an or question output if so
+        if is_or_question(msg):
+            out_msg = random.choice(OR_QUESTION)
+        
+        # check if the question seems too personal, return the out_msg if so
+        if is_in_list(msg, PERSONAL):
+            out_msg = "I'm sorry, that's a little too personal."
+        
+        # check if the input is a how question, return the out_msg if so
+        if is_how_question(msg):
+            out_msg = "look within."
 
-        # Check for a selection of topics that we have defined to respond to
-        #   Here, we will check for a series of topics that we have designed to answer to
-        if not out_msg:
+    # Catch-all to say something if msg not caught & processed so far
+    if not out_msg:
+        out_msg = random.choice(UNKNOWN)
 
-            # Initialize to collect a list of possible outputs
-            outs = []
-
-            # Check if the input looks like a greeting, add a greeting output if so
-            outs.append(selector(msg, GREETINGS_IN, GREETING_OUT))
-
-            # Check if the input looks like a computer thing, add a computer output if so
-            outs.append(selector(msg, COMP_IN, COMP_OUT))
-
-            # Check if the input looks like a joke, add a joke output if so
-            if is_in_list(msg, JOKES_IN):
-                outs.append(list_to_string(random.choice(JOKES_OUT), ''))
-
-            # IF YOU WANTED TO ADD MORE TOPICS TO RESPOND TO, YOU COULD ADD THEM IN HERE
-
-            # We could have selected multiple outputs from the topic search above (if multiple return possible outputs)
-            #   We also might have appended None in some cases, meaning we don't have a reply
-            #   To deal with this, we are going to randomly select an output from the set of outputs that are not None
-            options = list(filter(None, outs))
-            if options:
-                out_msg = random.choice(options)
-
-        # If we don't have an output yet, but the input was a question, return msg related to it being a question
-        if not out_msg and question:
-            out_msg = random.choice(QUESTION)
-            
-            # check if the question looks philosphical, return the out_msg if so
-            if is_in_list(msg, LIFE):
-                out_msg = "Sorry, I can't help you with that."
-            
-            # check if the question contains 'or', return an or question output if so
-            if is_or_question(msg):
-                out_msg = random.choice(OR_QUESTION)
-            
-            # check if the question seems too personal, return the out_msg if so
-            if is_in_list(msg, PERSONAL):
-                out_msg = "I'm sorry, that's a little too personal."
-            
-            # check if the input is a how question, return the out_msg if so
-            if is_how_question(msg):
-                out_msg = "look within."
-
-        # Catch-all to say something if msg not caught & processed so far
-        if not out_msg:
-            out_msg = random.choice(UNKNOWN)
-
-        print('OUTPUT:', out_msg)
+    # Check for an end msg 
+    if end_chat(msg):
+        out_msg = 'Bye!'
+        
+    return out_msg
 
