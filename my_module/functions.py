@@ -247,7 +247,7 @@ def end_chat(input_list):
     
     output = ''
     
-    if 'quit' or 'exit' or 'bye' in input_list:
+    if 'quit' in input_list or 'exit' in input_list or 'bye' in input_list:
         output = True
         
     else:
@@ -376,6 +376,10 @@ def magic_conch(user_input: str) -> str:
 
     # Prepare the input message
     msg = prepare_text(msg)
+
+    # Check for an end msg 
+    if end_chat(msg):
+        out_msg = 'Bye!'
     
     # Check if the answer to the buffalo joke is correct, if so, return end msg
     if is_buffalo_joke(msg):
@@ -431,9 +435,5 @@ def magic_conch(user_input: str) -> str:
     if not out_msg:
         out_msg = random.choice(UNKNOWN)
 
-    # Check for an end msg 
-    if end_chat(msg):
-        out_msg = 'Bye!'
-        
     return out_msg
 
